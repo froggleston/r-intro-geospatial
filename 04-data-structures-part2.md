@@ -99,11 +99,20 @@ str(gapminder)
  $ gdpPercap: num  779 821 853 836 740 ...
 ```
 
-We can also examine individual columns of the data frame with our `class` function:
+We can also examine individual columns of the data frame with the `class` or
+'typeof' functions:
 
 
 ``` r
 class(gapminder$year)
+```
+
+``` output
+[1] "integer"
+```
+
+``` r
+typeof(gapminder$year)
 ```
 
 ``` output
@@ -397,6 +406,131 @@ tail(gapminder_norway)
 1703 Zimbabwe 2002 11926563    Africa  39.989   672.0386          TRUE
 1704 Zimbabwe 2007 12311143    Africa  43.487   469.7093          TRUE
 1705   Norway 2016  5000000    Nordic  80.300 49400.0000         FALSE
+```
+
+
+
+## Removing columns and rows in data frames
+
+To remove columns from a data frame, we can use the 'subset' function.
+This function allows us to remove columns using their names.
+If we want to keep all columns except continent, pop and gdpPercap we can use the following `subset` command:
+
+
+``` r
+life_expectancy <- subset(gapminder, select = -c(continent, pop, gdpPercap))
+head(life_expectancy)
+```
+
+``` output
+      country year lifeExp below_average
+1 Afghanistan 1952  28.801          TRUE
+2 Afghanistan 1957  30.332          TRUE
+3 Afghanistan 1962  31.997          TRUE
+4 Afghanistan 1967  34.020          TRUE
+5 Afghanistan 1972  36.088          TRUE
+6 Afghanistan 1977  38.438          TRUE
+```
+
+We can also use a logical vector to achieve the same result. Make sure the
+vector's length matches the number of columns in the data frame (to avoid R
+repeating the shorter vector to match the length of the longer vector, called
+"vector recycling"):
+
+
+``` r
+life_expectancy <- gapminder[c(TRUE, TRUE, FALSE, FALSE, TRUE, FALSE)]
+head(life_expectancy)
+```
+
+``` output
+      country year lifeExp below_average
+1 Afghanistan 1952  28.801          TRUE
+2 Afghanistan 1957  30.332          TRUE
+3 Afghanistan 1962  31.997          TRUE
+4 Afghanistan 1967  34.020          TRUE
+5 Afghanistan 1972  36.088          TRUE
+6 Afghanistan 1977  38.438          TRUE
+```
+
+:::::: spoiler
+
+### Vector Recycling
+
+Vector recycling occurs when working with vectors of different length and it
+consist of repeating the elements of the shorter vector up to the length of
+the larger one. For more information, check the book R for Data Science and its
+[chapter about vectors](https://r4ds.had.co.nz/vectors.html#scalars-and-recycling-rules).
+::::::::
+
+Alternatively, we can use column positions:
+
+
+``` r
+life_expectancy <- gapminder[-c(3, 4, 6)]
+head(life_expectancy)
+```
+
+``` output
+      country year lifeExp below_average
+1 Afghanistan 1952  28.801          TRUE
+2 Afghanistan 1957  30.332          TRUE
+3 Afghanistan 1962  31.997          TRUE
+4 Afghanistan 1967  34.020          TRUE
+5 Afghanistan 1972  36.088          TRUE
+6 Afghanistan 1977  38.438          TRUE
+```
+
+Note that typically we select the rows we want to keep, rather than removing rows we do not want in the data.
+However, to remove rows from a data frame, we can use their positions.
+To practice on a smaller subset, we will filter the data to only those entries from Afghanistan after the year 2000.
+This smaller dataset will be easier for us to inspect by eye and see the changes we are making.
+
+
+``` r
+# Filter data for Afghanistan during the 20th century:
+afghanistan_20c <- gapminder[gapminder$country == "Afghanistan" &
+                             gapminder$year > 2000, ]
+
+# Now remove data for 2002, that is, the first row:
+afghanistan_20c[-1, ]
+```
+
+``` output
+       country year      pop continent lifeExp gdpPercap below_average
+12 Afghanistan 2007 31889923      Asia  43.828  974.5803          TRUE
+```
+
+
+In research, we often remove rows based on features of the data itself, rather than its location.
+For example, you may want to remove all the missing data prior to an analysis.  Let's first add some missing values (NAs) into the data and then we can use `na.omit()` to remove them.
+
+
+``` r
+# Turn some values into NAs:
+afghanistan_20c <- gapminder[gapminder$country == "Afghanistan", ]
+afghanistan_20c[afghanistan_20c$year < 2007, "year"] <- NA
+head(afghanistan_20c)
+```
+
+``` output
+      country year      pop continent lifeExp gdpPercap below_average
+1 Afghanistan   NA  8425333      Asia  28.801  779.4453          TRUE
+2 Afghanistan   NA  9240934      Asia  30.332  820.8530          TRUE
+3 Afghanistan   NA 10267083      Asia  31.997  853.1007          TRUE
+4 Afghanistan   NA 11537966      Asia  34.020  836.1971          TRUE
+5 Afghanistan   NA 13079460      Asia  36.088  739.9811          TRUE
+6 Afghanistan   NA 14880372      Asia  38.438  786.1134          TRUE
+```
+
+``` r
+# Remove NAs
+na.omit(afghanistan_20c)
+```
+
+``` output
+       country year      pop continent lifeExp gdpPercap below_average
+12 Afghanistan 2007 31889923      Asia  43.828  974.5803          TRUE
 ```
 
 
