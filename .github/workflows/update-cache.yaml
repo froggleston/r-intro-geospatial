@@ -63,7 +63,7 @@ jobs:
       renv-needed: ${{ steps.renv-check.outputs.renv-needed }}
     steps:
       - name: "Checkout Lesson"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Is renv required?"
         id: renv-check
@@ -89,7 +89,7 @@ jobs:
       RENV_PATHS_ROOT: ~/.local/share/renv/
     steps:
       - name: "Checkout Lesson"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Set up R"
         uses: r-lib/actions/setup-r@v2
@@ -152,7 +152,7 @@ jobs:
         id: cpr
         if: |
           steps.update.outputs.n > 0
-        uses: carpentries/create-pull-request@main
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.set-pat.outputs.pat || secrets.SANDPAPER_WORKFLOW }}
           delete-branch: true
